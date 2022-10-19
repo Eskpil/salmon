@@ -1,5 +1,7 @@
 # Salmon
 
+![Picture of the salmon web interfaces](./assets/screenshot.png)
+
 Managing libvirt virtual machines is a pain. With salmon you can manage
 your libvirt virtual machines with a stable and centralized rest api
 making it awesome for scripting and automation.
