@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  database:
+      container_name: database
+      image: mongo:5.0-focal
+      restart: always
+      ports:
+        - 27017:27017
+      volumes:
+        - ./testdata/mongo:/data/db
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=bob
+        - MONGO_INITDB_ROOT_PASSWORD=bob123bob
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.api
+    restart: always
+    ports:
+      - 8080:8080
+      - 8090:8090
+    depends_on:
+      - database
+      - imagepool
+    links:
+      - database
+      - imagepool
+    environment:
+      MONGODB_URI: "mongodb://bob:bob123bob@database"
+
+  imagepool:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.imagepool
+    restart: always
+    ports:
+      - 8091:8091
+    depends_on:
+      - database
+    links:
+      - database
+    environment:
+      MONGODB_URI: "mongodb://bob:bob123bob@database"

@@ -1,0 +1,16 @@
+ARG GO_VERSION=1.18
+FROM golang:${GO_VERSION}-alpine AS builder
+RUN apk update && apk add alpine-sdk git && rm -rf /var/ca
+
+RUN mkdir -p /api
+WORKDIR /app
+
+COPY . .
+RUN go get ./...
+RUN CGO_ENABLED=0 go build -o salmon-imagepool-api -ldflags '-w -extldflags "-static"' ./services/imagepool/main.go
+
+FROM gcr.io/distroless/static
+WORKDIR /
+COPY --from=builder /app/salmon-imagepool-api /bin/salmon-imagepool-api
+
+ENTRYPOINT ["/bin/salmon-imagepool-api"]
